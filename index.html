@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live BTC Price with Slabs </title>
+    <title>Live BTC Price with Slabs</title>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://s3.tradingview.com/tv.js"></script>
     <style>
@@ -25,6 +25,12 @@
             font-size: 18px;
             margin-top: 10px;
         }
+        .profit {
+            color: green;
+        }
+        .loss {
+            color: red;
+        }
     </style>
 </head>
 <body>
@@ -41,7 +47,7 @@
 </form>
 
 <p id="buy-info"></p>
-<p id="pnl">Total P&L: $0.00</p>
+<p id="pnl" class="profit">Total P&L: $0.00</p>
 
 <script>
     let btcAmount = 0;  // Initialize the BTC amount
@@ -100,7 +106,16 @@
     function updatePnL(currentPrice) {
         currentPortfolioValue = btcAmount * currentPrice;
         const pnl = currentPortfolioValue - totalInvestment;
-        document.getElementById('pnl').textContent = `Total P&L: $${numberWithCommas(pnl.toFixed(2))}`;
+        const pnlElement = document.getElementById('pnl');
+
+        // Apply color based on profit or loss
+        if (pnl >= 0) {
+            pnlElement.className = 'profit';
+        } else {
+            pnlElement.className = 'loss';
+        }
+
+        pnlElement.textContent = `Total P&L: $${numberWithCommas(pnl.toFixed(2))}`;
     }
 
     // Function to simulate buying BTC at market price
