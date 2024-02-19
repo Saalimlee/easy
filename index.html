@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live BTC Price with Slabs </title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://s3.tradingview.com/tv.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        h1 {
+            color: #333;
+        }
+        #tv_chart_container {
+            height: 400px;
+        }
+        #buy-sell-form {
+            margin-top: 20px;
+        }
+        #pnl {
+            font-size: 18px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Live BTC Price with Slabs</h1>
+<div id="tv_chart_container"></div>
+<p id="btc-price">Loading...</p>
+
+<!-- Dummy Trading Form -->
+<form id="buy-sell-form">
+    <label for="buy-dollars">Buy in USD:</label>
+    <input type="number" id="buy-dollars" step="0.01" min="0" placeholder="Enter USD amount" required>
+    <button type="button" onclick="buyBTC()">Buy at Market</button>
+</form>
+
+<p id="buy-info"></p>
+<p id="pnl">Total P&L: $0.00</p>
+
+<script>
+    let btcAmount = 0;  // Initialize the BTC amount
+    let totalInvestment = 0;
+    let currentPortfolioValue = 0;
+    let currentPrice = 0; // Variable to store current BTC price
+
+    // Function to format number with commas for better readability
+    function numberWithCommas(x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+    // Fetch initial BTC price
+    async function fetchInitialBTCPrice() {
+        try {
+            const response = await fetch('https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=USD');
+            const data = await response.json();
+            return data.USD;
+        } catch (error) {
+            console.error('Error fetching initial BTC price:', error);
+            return null;
+        }
+    }
+
+    // Initialize TradingView chart
+    const widget = new TradingView.widget({
+        "width": 800,
+        "height": 400,
+        "symbol": "COINBASE:BTCUSD",
+        "interval": "1",
+        "timezone": "Etc/UTC",
+        "theme": "light",
+        "style": "1",
+        "locale": "en",
+        "toolbar_bg": "#f1f3f6",
+        "enable_publishing": false,
+        "allow_symbol_change": true,
+        "container_id": "tv_chart_container"
+    });
+
+    // Fetch and update BTC price every second
+    async function fetchAndUpdateBTCPrice() {
+        try {
+            const newPrice = await fetch('https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=USD').then(response => response.json()).then(data => data.USD);
+            if (newPrice !== null) {
+                document.getElementById('btc-price').textContent = `$${numberWithCommas(newPrice)}`;
+                currentPrice = newPrice; // Update current price
+                updatePnL(newPrice);
+            }
+        } catch (error) {
+            console.error('Error fetching and updating BTC price:', error);
+        }
+    }
+
+    // Function to update Profit and Loss
+    function updatePnL(currentPrice) {
+        currentPortfolioValue = btcAmount * currentPrice;
+        const pnl = currentPortfolioValue - totalInvestment;
+        document.getElementById('pnl').textContent = `Total P&L: $${numberWithCommas(pnl.toFixed(2))}`;
+    }
+
+    // Function to simulate buying BTC at market price
+    function buyBTC() {
+        const buyDollarsInput = document.getElementById('buy-dollars');
+        const dollars = parseFloat(buyDollarsInput.value);
+        if (!isNaN(dollars) && dollars > 0) {
+            const btcToBuy = dollars / currentPrice || 0; // Corrected variable name
+            totalInvestment += dollars;  // Update total investment
+            btcAmount += btcToBuy;
+            document.getElementById('buy-info').textContent = `Bought ${btcToBuy.toFixed(4)} BTC for $${numberWithCommas(dollars.toFixed(2))} (USD Amount)`;
+            alert(`You bought ${btcToBuy.toFixed(4)} BTC at market price for $${numberWithCommas(dollars.toFixed(2))}. Total BTC: ${btcAmount}`);
+        } else {
+            alert('Invalid USD amount. Please enter a valid positive number.');
+        }
+        buyDollarsInput.value = '';  // Clear the input field
+    }
+
+    // Initial fetch and update
+    fetchInitialBTCPrice().then(initialPrice => {
+        if (initialPrice !== null) {
+            document.getElementById('btc-price').textContent = `$${numberWithCommas(initialPrice)}`;
+            currentPrice = initialPrice; // Set initial price
+            updatePnL(initialPrice);
+        }
+    });
+
+    // Fetch and update BTC price every second
+    setInterval(fetchAndUpdateBTCPrice, 1000);
+</script>
+
+</body>
+</html>
