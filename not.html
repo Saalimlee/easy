@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR Denial Tool</title>
+    <style>
+        /* Some basic styling for better presentation */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            margin-top: 0;
+        }
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #note {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>AR Denial Tool</h2>
+        <label for="primaryOption">Select Primary Option:</label>
+        <select id="primaryOption">
+            <option value="">Select...</option>
+            <option value="duplicate">Duplicate Denial</option>
+            <option value="maxBenefits">Maximum Benefits</option>
+            <option value="correctionDenial">Correction Denial</option>
+            <option value="nonCoveredService">Non-Covered Service</option>
+            <!-- Add more primary options here -->
+        </select>
+
+        <!-- Sub-options for Duplicate Denial -->
+        <div id="duplicateSubOptions" style="display: none;">
+            <label for="duplicateSubOption">Select Sub-Option:</label>
+            <select id="duplicateSubOption">
+                <option value="">Select...</option>
+                <option value="dxInconsistent">DX Inconsistent</option>
+                <option value="paidToDiffProvider">Paid to Different Provider</option>
+                <option value="bundledService">Bundled Service</option>
+            </select>
+        </div>
+
+        <!-- Sub-options for Maximum Benefits -->
+        <div id="maxBenefitsSubOptions" style="display: none;">
+            <label for="maxBenefitsSubOption">Select Sub-Option:</label>
+            <select id="maxBenefitsSubOption">
+                <option value="">Select...</option>
+                <option value="paidToDiffDoctor">Paid to Different Doctor</option>
+                <option value="paidToSameDoctor">Paid to Same Doctor</option>
+            </select>
+        </div>
+
+        <!-- Sub-options for Correction Denial -->
+        <div id="correctionDenialSubOptions" style="display: none;">
+            <label for="correctionDenialSubOption">Select Sub-Option:</label>
+            <select id="correctionDenialSubOption">
+                <option value="">Select...</option>
+                <option value="unableToRecoup">Unable to Recoup Reason</option>
+                <option value="recoupedCCReceived">Recouped CC Received</option>
+                <option value="deniedForDxInProcedure">Denied for DX in Procedure</option>
+                <option value="recoupedMedicalNecessity">Recouped Medical Necessity</option>
+            </select>
+        </div>
+
+        <!-- Sub-options for Non-Covered Service -->
+        <div id="nonCoveredServiceSubOptions" style="display: none;">
+            <label for="nonCoveredServiceSubOption">Select Sub-Option:</label>
+            <select id="nonCoveredServiceSubOption">
+                <option value="">Select...</option>
+                <option value="nonCoveredPtPlan">Non-Covered Pt Plan</option>
+                <option value="nonCoveredUnderInsurance">Non-Covered Under Insurance</option>
+            </select>
+        </div>
+
+        <button onclick="submitOption()">Submit</button>
+
+        <!-- Display area for the note -->
+        <div id="note" style="display: none;"></div>
+    </div>
+
+    <script>
+        // Function to handle submission
+        function submitOption() {
+            // Get selected primary option
+            var primaryOption = document.getElementById("primaryOption").value;
+            
+            // Get selected sub-option if available
+            var subOption = "";
+            switch (primaryOption) {
+                case "duplicate":
+                    subOption = document.getElementById("duplicateSubOption").value;
+                    break;
+                case "maxBenefits":
+                    subOption = document.getElementById("maxBenefitsSubOption").value;
+                    break;
+                case "correctionDenial":
+                    subOption = document.getElementById("correctionDenialSubOption").value;
+                    break;
+                case "nonCoveredService":
+                    subOption = document.getElementById("nonCoveredServiceSubOption").value;
+                    break;
+                default:
+                    subOption = "";
+            }
+            
+            // Display note based on selected sub-option
+            var note = "";
+            switch (subOption) {
+                case "dxInconsistent":
+                    note = "LINE#01 AS PER THE REVIEW THE CLAIM GOT DENIED AS DUPLICATE, SO CALLED HUMANA SW EMMA REP SAID THE CLAIM WAS DENIED ON 02/12/1222 THE CLAIM GOT DENIED AS DUPLICATE SO ASKED TO REP ABOUT THE ORGINAL CLAIM REP CHECKED AND SAID THE ORIGINAL CLAIM WAS DENIED AS DX INCONSISTENT WITH CPT,ALSO REP SUGGEST TO SENT CC AND THE CC TFL IS 180DAYS FROM DOD,SO NEED TO MOVE CODING REVIEW,IPLAN#,POLICY#,CLAIM#123456,REF#9099,HENCE CLAIM MOVE TO CODING REVIEW...";
+                    break;
+                case "paidToDiffProvider":
+                    note = "LINE#01 AS PER THE REVIEW THE CLAIM GOT DENIED AS DUPLICATE, SO CALLED HUMANA SW EMMA REP SAID THE CLAIM WAS DENIED ON 02/12/1222 THE CLAIM GOT DENIED AS DUPLICATE SO ASKED TO REP ABOUT THE ORGINAL CLAIM REP CHECKED AND SAID THE ORIGINAL CLAIM WAS PAID TO DIFF PROVIDER UNDER DIFF TAX ID ON SAME DOS,SO EXPLAINED TO REP THAT OUT PROVIDER ALSO RENDERED THE SAME SERVICE,SO ASKED TO REP TO TAKE BACK FOR REPROCESS,REP REFUED AND ALSO REP SUGGEST TO SENT CC AND THE CC TFL IS 180DAYS FROM DOD,SO NEED TO ADD 77 MOD AND REFILE THE CLAIM TO SAME PAYER, CLAIM#123456,REF#9099,HENCE CC SENT...";
+                    break;
+                case "bundledService":
+                    note = "LINE#01 AS PER THE REVIEW THE CLAIM GOT DENIED AS DUPLICATE, SO CALLED HUMANA SW EMMA REP SAID THE CLAIM WAS DENIED ON 02/12/1222 THE CLAIM GOT DENIED AS DUPLICATE SO ASKED TO REP ABOUT THE ORGINAL CLAIM REP CHECKED AND SAID THE ORIGINAL CLAIM WAS DENIED AS BUNDLED SERVICE,SO ASKED TO REP ABOUT THE BUNDLED CODE,REP CHECKED AND REFUSED TO PROVIDE,ALSO REP SUGGEST TO SENT CC AND THE CC TFL IS 180DAYS FROM DOD,SO NEED TO MOVE CODING REVIEW,CLAIM#123456,REF#9099,HENCE CLAIM MOVE TO CODING REVIEW...";
+                    break;
+                case "paidToDiffDoctor":
+                    note = "Note for Maximum Benefits - Paid to Different Doctor";
+                    break;
+                case "paidToSameDoctor":
+                    note = "Note for Maximum Benefits - Paid to Same Doctor";
+                    break;
+                case "unableToRecoup":
+                    note = "Note for Correction Denial - Unable to Recoup Reason";
+                    break;
+                case "recoupedCCReceived":
+                    note = "Note for Correction Denial - Recouped CC Received";
+                    break;
+                case "deniedForDxInProcedure":
+                    note = "Note for Correction Denial - Denied for DX in Procedure";
+                    break;
+                case "recoupedMedicalNecessity":
+                    note = "Note for Correction Denial - Recouped Medical Necessity";
+                    break;
+                case "nonCoveredPtPlan":
+                    note = "Note for Non-Covered Service - Non-Covered Pt Plan";
+                    break;
+                case "nonCoveredUnderInsurance":
+                    note = "Note for Non-Covered Service - Non-Covered Under Insurance";
+                    break;
+                default:
+                    note = "No note available.";
+            }
+            
+            // Display the note
+            document.getElementById("note").innerText = note;
+            document.getElementById("note").style.display = "block";
+        }
+
+        // Function to show/hide sub-options based on primary option selection
+        document.getElementById("primaryOption").addEventListener("change", function() {
+            var primaryOption = this.value;
+            document.getElementById("duplicateSubOptions").style.display = "none";
+            document.getElementById("maxBenefitsSubOptions").style.display = "none";
+            document.getElementById("correctionDenialSubOptions").style.display = "none";
+            document.getElementById("nonCoveredServiceSubOptions").style.display = "none";
+            if (primaryOption === "duplicate") {
+                document.getElementById("duplicateSubOptions").style.display = "block";
+            } else if (primaryOption === "maxBenefits") {
+                document.getElementById("maxBenefitsSubOptions").style.display = "block";
+            } else if (primaryOption === "correctionDenial") {
+                document.getElementById("correctionDenialSubOptions").style.display = "block";
+            } else if (primaryOption === "nonCoveredService") {
+                document.getElementById("nonCoveredServiceSubOptions").style.display = "block";
+            }
+        });
+    </script>
+</body>
+</html>
